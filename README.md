@@ -1,24 +1,26 @@
 ## Keystone
 
-A Discord bot for tracking World of Warcraft mythic+ keystones. Made with the [disco](https://github.com/b1naryth1ef/disco) library.
+A Discord bot for tracking World of Warcraft mythic+ keystones. Made with the [discord.py](https://github.com/Rapptz/discord.py) library.
 
 ## How to Run
 
 1. Go to https://discordapp.com/developers/applications/me
 2. Create an application & retrieve your bot token
 3. Clone the repo & navigate to directory
-4. `pip install disco-py`
-5. Put your token in `config.yaml`
-6. Run `python -m disco.cli --config config.yaml` in terminal
+4. Run `pipenv install` or run `pip install discord.py requests jsonpickle`
+5. Create a file named token.txt in the repo directory
+6. Put your token in `token.txt`
+7. Run `pipenv run python keystone_bot.py` or run `python keystone_bot.py`
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
 | help | explains how to use the bot|
-| dungeons | returns a list of acceptable abbreviations |
+| dungeons | list of dungeons and acceptable abbreviations |
 | add | adds a key |
 | remove | removes a key |
-| list | lists current keys |
+| keys | lists current stored keys |
+| affixes | lists the weekly affix information |
 
 ![](images/bot_example.png)

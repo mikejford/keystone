@@ -1,6 +1,4 @@
 *.pyc
 Pipfile.lock
 token.txt
-
-config.yaml
-keys.json
+keystone_cache.json
