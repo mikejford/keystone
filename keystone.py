@@ -48,7 +48,7 @@ class KeystoneStorage():
         self.guilds = {}
         now = datetime.utcnow()
         next_tuesday = now.replace(hour=15, minute=0, second=0, microsecond=0) + timedelta(days=(1-now.weekday()) % 7)
-        if now.weekday() is 1:
+        if now > next_tuesday:
             next_tuesday += timedelta(days=7)
         self.timestamp = next_tuesday
 
