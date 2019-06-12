@@ -33,14 +33,17 @@ def generate_embed(ctx, key: Keystone = None):
         dungeons = []
         levels = []
 
-        for k in keystones.guilds[ctx.guild.id]:
-            names.append(k.owner)
-            dungeons.append(DUNGEON_ABBR_LIST[k.dungeon])
-            levels.append(str(k.level))
+        if keystones.guilds[ctx.guild.id]: 
+            for k in keystones.guilds[ctx.guild.id]:
+                names.append(k.owner)
+                dungeons.append(DUNGEON_ABBR_LIST[k.dungeon])
+                levels.append(str(k.level))
 
-        embed.add_field(name='Name', value='\n'.join(names))
-        embed.add_field(name='Dungeon', value='\n'.join(dungeons))
-        embed.add_field(name='Level', value='\n'.join(levels))
+            embed.add_field(name='Name', value='\n'.join(names))
+            embed.add_field(name='Dungeon', value='\n'.join(dungeons))
+            embed.add_field(name='Level', value='\n'.join(levels))
+        else:
+            embed.add_field(name='No keys have been added.', value='Add a key with the "!ks add" command', inline=False)
 
     if key is not None:
         embed.add_field(name='Name', value=key.owner)
