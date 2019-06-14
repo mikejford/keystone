@@ -30,11 +30,14 @@ class KeystoneStorage():
     def __init__(self):
         self._reset_cache()
         with lock:
-            with open('keystone_cache.json', 'r') as f:
-                cache_data = jsonpickle.decode(f.read())
-                now = datetime.utcnow()
-                for guild_id, keys in cache_data.items():
-                    self.guilds[int(guild_id)] = list(filter(lambda k: (k.invalid_after > now), keys))
+            try:
+                with open('keystone_cache.json', 'r') as f:
+                    cache_data = jsonpickle.decode(f.read())
+                    now = datetime.utcnow()
+                    for guild_id, keys in cache_data.items():
+                        self.guilds[int(guild_id)] = list(filter(lambda k: (k.invalid_after > now), keys))
+            except FileNotFoundError:
+                print('No cache data found.')
 
     def find_key_by_name(self, guild_id, name):
         for index, keystone in enumerate(self.guilds[guild_id]):
