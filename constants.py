@@ -5,10 +5,10 @@ DUNGEON_LIST = {
     'Shrine of the Storm': ['SOTS', 'Shrine'],
     'Siege of Boralus': ['SB', 'SOB', 'Siege'],
     'Temple of Sethraliss': ['TOS', 'Temple'],
-    'The MOTHERLODE!!': ['ML', 'Mother', 'Lode'],
-    'The Underrot': ['UR', 'Underrot'],
-    'Tol Dagor': ['TD'],
-    'Waycrest Manor': ['WM', 'Waycrest']
+    'The MOTHERLODE!!': ['ML', 'Motherlode', 'Lode'],
+    'The Underrot': ['UR', 'Underrot', 'Rot'],
+    'Tol Dagor': ['TD', 'Tol'],
+    'Waycrest Manor': ['WM', 'Waycrest', 'Manor']
 }
 
 DUNGEON_ABBR_LIST = {}
