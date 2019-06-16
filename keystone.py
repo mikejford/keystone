@@ -55,9 +55,10 @@ class KeystoneStorage():
             next_tuesday += timedelta(days=7)
         self.timestamp = next_tuesday
 
-    def _check_cache(self, guild_id):
+    def check_cache(self, guild_id):
         if datetime.utcnow() > self.timestamp:
             self._reset_cache()
+            self._save_cache()
         if guild_id not in self.guilds:
             self.guilds[guild_id] = []
 
@@ -67,7 +68,7 @@ class KeystoneStorage():
                 print(jsonpickle.encode(self.guilds), file=f)
 
     def add_key(self, guild_id, user_id, dungeon, lvl, name):
-        self._check_cache(guild_id)
+        self.check_cache(guild_id)
         key = Keystone(dungeon, lvl, name, user_id, self.timestamp)
 
         if self.find_key_by_name(guild_id, name) is not None:
@@ -79,7 +80,7 @@ class KeystoneStorage():
         return key
 
     def remove_key(self, guild_id, user_id, name):
-        self._check_cache(guild_id)
+        self.check_cache(guild_id)
         key = None
 
         index = self.find_key_by_name(guild_id, name)
