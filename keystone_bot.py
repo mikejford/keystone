@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from keystone import Keystone, KeystoneStorage
-from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, KEYSTONE_ICON_URL
+from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, KEYSTONE_ICON_URL, SELF_DESTRUCT_MSG_TIMER
 
 token = open("token.txt", "r").read().strip()
 
@@ -32,9 +32,7 @@ def generate_embed(ctx, key: Keystone = None):
 
     if ctx.command.name == 'add' \
             and key is not None:
-        embed.add_field(name='Name', value=key.owner)
-        embed.add_field(name='Dungeon', value=DUNGEON_ABBR_LIST[key.dungeon])
-        embed.add_field(name='Level', value=str(key.level))
+        embed.add_field(name=key.owner, value=' '.join([DUNGEON_ABBR_LIST[key.dungeon], str(key.level)]), inline=False)
 
         affix_names = []
         for index, affix in enumerate(keystones.affixes['affix_details']):
@@ -46,18 +44,8 @@ def generate_embed(ctx, key: Keystone = None):
     if ctx.command.name == 'keys':
         if ctx.guild.id in keystones.guilds \
                 and keystones.guilds[ctx.guild.id]: 
-            names = []
-            dungeons = []
-            levels = []
-
             for k in keystones.guilds[ctx.guild.id]:
-                names.append(k.owner)
-                dungeons.append(DUNGEON_ABBR_LIST[k.dungeon])
-                levels.append(str(k.level))
-
-            embed.add_field(name='Name', value='\n'.join(names))
-            embed.add_field(name='Dungeon', value='\n'.join(dungeons))
-            embed.add_field(name='Level', value='\n'.join(levels))
+                embed.add_field(name=k.owner, value=' '.join([DUNGEON_ABBR_LIST[k.dungeon], str(k.level)]), inline=False)
         else:
             embed.add_field(name='No keys have been added.', value='Add a key with the "!ks add" command', inline=False)
 
@@ -76,7 +64,7 @@ async def add(ctx, dungeon: str, lvl: int, character: str = None):
 
     name = character or ctx.author.display_name
     key = keystones.add_key(ctx.guild.id, ctx.author.id, dungeon.lower(), lvl, name)
-    await ctx.send(content='Keystone added by {}'.format(ctx.author.display_name), embed=generate_embed(ctx, key), delete_after=120)
+    await ctx.send(content='Keystone added by {}'.format(ctx.author.display_name), embed=generate_embed(ctx, key), delete_after=SELF_DESTRUCT_MSG_TIMER)
 
 @add.error
 async def add_error(ctx, error):
@@ -88,7 +76,7 @@ async def remove(ctx, character: str = None):
     name = character or ctx.author.display_name
     if not keystones.remove_key(ctx.guild.id, ctx.author.id, name):
         raise RemoveCommandError('You are unable to remove that key')
-    await ctx.send('Keystone removed by {}'.format(ctx.author.display_name), delete_after=120)
+    await ctx.send('Keystone removed by {}'.format(ctx.author.display_name), delete_after=SELF_DESTRUCT_MSG_TIMER)
 
 @remove.error
 async def remove_error(ctx, error):
@@ -98,12 +86,12 @@ async def remove_error(ctx, error):
 @bot.command(help='Lists the stored keystones and weekly affix information', aliases=['list'])
 async def keys(ctx):
     keystones.check_cache(ctx.guild.id)
-    await ctx.send(embed=generate_embed(ctx), delete_after=120)
+    await ctx.send(content='Current keystone list', embed=generate_embed(ctx), delete_after=SELF_DESTRUCT_MSG_TIMER)
 
 @bot.command(help='Lists the weekly affix information')
 async def affixes(ctx):
     keystones.check_cache(ctx.guild.id)
-    await ctx.send(embed=generate_embed(ctx), delete_after=120)
+    await ctx.send(embed=generate_embed(ctx), delete_after=SELF_DESTRUCT_MSG_TIMER)
 
 @bot.command(help='Lists the dungeons and acceptable abbreviations')
 async def dungeons(ctx):
@@ -111,6 +99,6 @@ async def dungeons(ctx):
     msg = header + '\n' + ('-' * len(header)) + '\n'
     for name, abbr in DUNGEON_LIST.items():
         msg += '| {:<{name_len}} | {:<{abbr_len}} |\n'.format(name, ', '.join(abbr), name_len=name_len, abbr_len=abbr_len)
-    await ctx.send('```' + msg + '```', delete_after=120)
+    await ctx.send('```' + msg + '```', delete_after=SELF_DESTRUCT_MSG_TIMER)
 
 bot.run(token)
