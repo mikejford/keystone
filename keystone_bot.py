@@ -76,7 +76,7 @@ async def add(ctx, dungeon: str, lvl: int, character: str = None):
 
     name = character or ctx.author.display_name
     key = keystones.add_key(ctx.guild.id, ctx.author.id, dungeon.lower(), lvl, name)
-    await ctx.send(content='Keystone added by {}'.format(ctx.author.display_name), embed=generate_embed(ctx, key), delete_after=120)
+    await ctx.send(content='Keystone added by {}'.format(ctx.author.display_name), embed=generate_embed(ctx, key))
 
 @add.error
 async def add_error(ctx, error):
@@ -88,7 +88,7 @@ async def remove(ctx, character: str = None):
     name = character or ctx.author.display_name
     if not keystones.remove_key(ctx.guild.id, ctx.author.id, name):
         raise RemoveCommandError('You are unable to remove that key')
-    await ctx.send('Keystone removed by {}'.format(ctx.author.display_name), delete_after=120)
+    await ctx.send('Keystone removed by {}'.format(ctx.author.display_name))
 
 @remove.error
 async def remove_error(ctx, error):
@@ -98,12 +98,12 @@ async def remove_error(ctx, error):
 @bot.command(help='Lists the stored keystones and weekly affix information', aliases=['list'])
 async def keys(ctx):
     keystones.check_cache(ctx.guild.id)
-    await ctx.send(embed=generate_embed(ctx), delete_after=120)
+    await ctx.send(embed=generate_embed(ctx))
 
 @bot.command(help='Lists the weekly affix information')
 async def affixes(ctx):
     keystones.check_cache(ctx.guild.id)
-    await ctx.send(embed=generate_embed(ctx), delete_after=120)
+    await ctx.send(embed=generate_embed(ctx))
 
 @bot.command(help='Lists the dungeons and acceptable abbreviations')
 async def dungeons(ctx):
@@ -111,6 +111,6 @@ async def dungeons(ctx):
     msg = header + '\n' + ('-' * len(header)) + '\n'
     for name, abbr in DUNGEON_LIST.items():
         msg += '| {:<{name_len}} | {:<{abbr_len}} |\n'.format(name, ', '.join(abbr), name_len=name_len, abbr_len=abbr_len)
-    await ctx.send('```' + msg + '```', delete_after=120)
+    await ctx.send('```' + msg + '```')
 
 bot.run(token)
