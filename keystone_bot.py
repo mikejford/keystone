@@ -91,7 +91,7 @@ async def keys(ctx):
 @bot.command(help='Lists the weekly affix information')
 async def affixes(ctx):
     keystones.check_cache(ctx.guild.id)
-    await ctx.send(embed=generate_embed(ctx), delete_after=SELF_DESTRUCT_MSG_TIMER)
+    await ctx.send(content='Weekly affix details', embed=generate_embed(ctx), delete_after=SELF_DESTRUCT_MSG_TIMER)
 
 @bot.command(help='Lists the dungeons and acceptable abbreviations')
 async def dungeons(ctx):
