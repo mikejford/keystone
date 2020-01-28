@@ -2,13 +2,15 @@ DUNGEON_LIST = {
     'Atal\'Dazar': ['AD', 'Atal'],
     'Freehold': ['FH'],
     'King\'s Rest': ['KR'],
-    'Shrine of the Storm': ['SOTS', 'Shrine'],
+    'Shrine of the Storm': ['SOTS', 'SOS', 'Shrine'],
     'Siege of Boralus': ['SB', 'SOB', 'Siege'],
     'Temple of Sethraliss': ['TOS', 'Temple'],
     'The MOTHERLODE!!': ['ML', 'Motherlode', 'Lode'],
     'The Underrot': ['UR', 'Underrot', 'Rot'],
     'Tol Dagor': ['TD', 'Tol'],
-    'Waycrest Manor': ['WM', 'Waycrest', 'Manor']
+    'Waycrest Manor': ['WM', 'Waycrest', 'Manor'],
+    'Mechagon Junkyard': ['JY', 'Junkyard'],
+    'Mechagon Workshop': ['WS', 'Workshop'],
 }
 
 DUNGEON_ABBR_LIST = {}
