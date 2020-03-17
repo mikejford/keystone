@@ -46,8 +46,7 @@ class KeystoneStorage():
         return None
 
     def _reset_cache(self):
-        r = requests.get(AFFIX_URL, timeout=2)
-        self.affixes = r.json()
+        self.load_affixes()
         self.guilds = {}
         now = datetime.utcnow()
         next_tuesday = now.replace(hour=15, minute=0, second=0, microsecond=0) + timedelta(days=(1-now.weekday()) % 7)
@@ -89,3 +88,7 @@ class KeystoneStorage():
             key = self.guilds[guild_id].pop(index)
         self._save_cache()
         return key
+
+    def load_affixes(self):
+        r = requests.get(AFFIX_URL, timeout=2)
+        self.affixes = r.json()
