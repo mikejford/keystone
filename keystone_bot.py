@@ -22,7 +22,7 @@ class AddCommandError(commands.UserInputError):
         m = message
         if (show_cmd_fmt or arg_string):
             m = "\n".join([message, add_cmd_fmt])
-        if (arg_string): 
+        if (arg_string):
             m = "\n".join([m, "User provided values: {}".format(arg_string)])
         super().__init__(m)
 
