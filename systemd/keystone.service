@@ -1,0 +1,14 @@
+[Unit]
+Description=Keystone Discord Bot
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/keystone
+ExecStart=/usr/bin/python3 keystone_bot.py
+Restart=on-failure
+SyslogIdentifier=keystone
+
+[Install]
+WantedBy=multi-user.target
