@@ -3,7 +3,7 @@ import jsonpickle
 from datetime import datetime, timedelta
 from threading import Lock
 from constants import AFFIX_URL
-from randards import KeysApi
+from keys_api import KeysApi
 
 lock = Lock()
 keys_api = KeysApi()
