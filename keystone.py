@@ -3,8 +3,10 @@ import jsonpickle
 from datetime import datetime, timedelta
 from threading import Lock
 from constants import AFFIX_URL
+from keys_api import KeysApi
 
 lock = Lock()
+keys_api = KeysApi()
 
 def keystone_insort_right(a, x, lo=0, hi=None):
     if hi is None:
@@ -69,6 +71,8 @@ class KeystoneStorage():
     def add_key(self, guild_id, user_id, dungeon, lvl, name):
         self.check_cache(guild_id)
         key = Keystone(dungeon, lvl, name, user_id, self.timestamp)
+        
+        keys_api.post_key(user_id, name, dungeon, lvl)
 
         if self.find_key_by_name(guild_id, name) is not None:
             index = self.find_key_by_name(guild_id, name)
