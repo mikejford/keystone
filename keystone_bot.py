@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from keystone import Keystone, KeystoneStorage
-from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, MIN_KEYSTONE_LEVEL, MAX_KEYSTONE_LEVEL, KEYSTONE_ICON_URL, SELF_DESTRUCT_MSG_TIMER
+from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, MIN_KEYSTONE_LEVEL, KEYSTONE_ICON_URL, SELF_DESTRUCT_MSG_TIMER
 
 token = open("token.txt", "r").read().strip()
 
@@ -82,8 +82,8 @@ async def add(ctx, *args):
 
     if dungeon.lower() not in DUNGEON_ABBR_LIST.keys():
         raise AddCommandError("Dungeon abbreviation `{}` not found. Use `!ks dungeons` to see the list of acceptable names and abbreviations".format(dungeon))
-    elif lvl < MIN_KEYSTONE_LEVEL or lvl > MAX_KEYSTONE_LEVEL:
-        raise AddCommandError("Keystone level `{}` is not valid. Provide a value between {} and {}".format(lvl, MIN_KEYSTONE_LEVEL, MAX_KEYSTONE_LEVEL))
+    elif lvl < MIN_KEYSTONE_LEVEL:
+        raise AddCommandError("Keystone level `{}` is not valid. Provide a numeric value from {} and higher".format(lvl, MIN_KEYSTONE_LEVEL))
 
     name = character or ctx.author.display_name
     key = keystones.add_key(ctx.guild.id, ctx.author.id, dungeon.lower(), lvl, name)

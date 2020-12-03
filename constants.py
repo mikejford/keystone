@@ -1,4 +1,15 @@
 DUNGEON_LIST = {
+    'The Necrotic Wake': ['NW', 'Necrotic Wake'],
+    'Plaguefall': ['PF'],
+    'Mists of Tirna Scithe': ['MOTS', 'Mists', 'Tirna Scithe'],
+    'Halls of Atonement': ['HOA', 'HA', 'Halls', 'Atonement'],
+    'Theater of Pain': ['TOP', 'TP', 'Theater', 'Pain'],
+    'De Other Side': ['DOS', 'OS', 'Other Side'],
+    'Spires of Ascension': ['SOA', 'SA', 'Spires', 'Ascension'],
+    'Sanguine Depths': ['SD'],
+}
+
+BFA_DUNGEON_LIST = {
     'Atal\'Dazar': ['AD', 'Atal'],
     'Freehold': ['FH'],
     'King\'s Rest': ['KR'],
@@ -19,7 +30,6 @@ for name, abbrs in DUNGEON_LIST.items():
     DUNGEON_ABBR_LIST.update({name.lower(): name})
 
 MIN_KEYSTONE_LEVEL = 2
-MAX_KEYSTONE_LEVEL = 30
 
 SELF_DESTRUCT_MSG_TIMER = None
 GITHUB_URL = 'https://github.com/mikejford/keystone'
