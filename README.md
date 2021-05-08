@@ -7,10 +7,12 @@ A Discord bot for tracking World of Warcraft mythic+ keystones. Made with the [d
 1. Go to https://discordapp.com/developers/applications/me
 2. Create an application & retrieve your bot token
 3. Clone the repo & navigate to directory
-4. Run `pipenv install` or run `pip install -r requirements.txt`
-5. Create a file named token.txt in the repo directory
-6. Put your token in `token.txt`
-7. Run `pipenv run python keystone_bot.py` or run `python keystone_bot.py`
+4. (Optional) Run `python -m venv env` to create a virtual python environment
+5. (Optional) Run `source env/bin/activate` to activate the virtual python environment
+6. Run `pip install -r requirements.txt` to install the required python modules
+7. Create a file named token.txt in the repo directory
+8. Put your bot token in `token.txt`
+9. Run `python keystone_bot.py` to start the keystone bot
 
 ## Commands
 

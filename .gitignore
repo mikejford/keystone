@@ -1,4 +1,4 @@
 *.pyc
-Pipfile.lock
+env
 token.txt
 keystone_cache.json
