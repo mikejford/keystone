@@ -10,7 +10,8 @@ abbr_len = max(map(lambda abbrs: len(', '.join(abbrs)), DUNGEON_LIST.values()))
 
 keystones = KeystoneStorage()
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('!ks '))
+intents = discord.Intents(messages=True, guilds=True)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or('!ks '), intents=intents)
 
 @bot.event
 async def on_ready():
