@@ -47,11 +47,10 @@ def generate_embed(ctx, key: Keystone = None):
             embed.add_field(name='Affixes', value=', '.join(affix_names), inline=False)
 
     if ctx.command.name == 'keys':
-        if ctx.guild.id in keystones.guilds \
-                and keystones.guilds[ctx.guild.id]: 
-            for k in keystones.guilds[ctx.guild.id]:
-                embed.add_field(name=k.owner, value=' '.join([DUNGEON_ABBR_LIST[k.dungeon], str(k.level)]), inline=False)
-        else:
+        keys = keystones.get_keys_by_guild(ctx.guild.id)
+        for k in keys:
+            embed.add_field(name=k['owner'], value=' '.join([DUNGEON_ABBR_LIST[k['dungeon']], str(k['level'])]), inline=False)
+        if len(keys) == 0:
             embed.add_field(name='No keys have been added.', value='Add a key with the "!ks add" command', inline=False)
 
     if ctx.command.name == 'affixes':

@@ -1,5 +1,8 @@
 import requests
-import jsonpickle
+import jsonpickle # remove after tinydb is working
+
+from tinydb import TinyDB, Query
+
 from datetime import datetime, timedelta
 from threading import Lock
 from constants import AFFIX_URL
@@ -30,6 +33,9 @@ class Keystone():
 
 class KeystoneStorage():
     def __init__(self):
+        self.db = TinyDB('keystonedb.json')
+
+        # jsonpickle related operations
         self._reset_cache()
         with lock:
             try:
@@ -48,6 +54,8 @@ class KeystoneStorage():
         return None
 
     def _reset_cache(self):
+        # use datetime.fromisoformat(str) to evaluate keys in the tinydb
+
         self.load_affixes()
         self.guilds = {}
         now = datetime.utcnow()
@@ -72,8 +80,22 @@ class KeystoneStorage():
         self.check_cache(guild_id)
         key = Keystone(dungeon, lvl, name, user_id, self.timestamp)
         
-        keys_api.post_key(user_id, name, dungeon, lvl)
+        key_dict = {
+                'guild_id': guild_id,
+                'user_id': user_id,
+                'dungeon': dungeon,
+                'level': lvl,
+                'owner': name,
+                'invalid_after': self.timestamp.isoformat()
+                }
 
+        key_query = Query()
+        self.db.upsert(key_dict, (key_query.guild_id == guild_id) & (key_query.owner == name))
+
+        # move this to a separate handler registered with the add command
+        # keys_api.post_key(user_id, name, dungeon, lvl)
+
+        # jsonpickle related operations
         if self.find_key_by_name(guild_id, name) is not None:
             index = self.find_key_by_name(guild_id, name)
             self.guilds[guild_id][index] = key
@@ -86,12 +108,20 @@ class KeystoneStorage():
         self.check_cache(guild_id)
         key = None
 
+        key_query = Query()
+        self.db.remove((key_query.guild_id == guild_id) & (key_query.owner == name))
+
+        # jsonpickle related operations
         index = self.find_key_by_name(guild_id, name)
         if index is not None \
                 and user_id == self.guilds[guild_id][index].user_id:
             key = self.guilds[guild_id].pop(index)
         self._save_cache()
         return key
+
+    def get_keys_by_guild(self, guild_id):
+        key_query = Query()
+        return self.db.search(key_query.guild_id == guild_id)
 
     def load_affixes(self):
         r = requests.get(AFFIX_URL, timeout=2)
