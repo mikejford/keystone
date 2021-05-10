@@ -30,33 +30,12 @@ class AddCommandError(commands.UserInputError):
 class RemoveCommandError(commands.UserInputError):
     pass
 
-def generate_embed(ctx, key: Keystone = None):
-    embed = discord.Embed()
-    embed.set_author(name='Mythic Keystones', icon_url=KEYSTONE_ICON_URL)
+def generate_embed(name, value, embed = None):
+    if embed is None:
+        embed = discord.Embed()
+        embed.set_author(name='Mythic Keystones', icon_url=KEYSTONE_ICON_URL)
 
-    if (ctx.command.name == 'add' or ctx.command.name == 'remove') \
-            and key is not None:
-        embed.add_field(name=key.owner, value=' '.join([DUNGEON_ABBR_LIST[key.dungeon], str(key.level)]), inline=False)
-
-        if ctx.command.name == 'add':
-            affix_names = []
-            for index, affix in enumerate(keystones.affixes['affix_details']):
-                if index >= key.level/3:
-                    break
-                affix_names.append(affix['name'])
-            embed.add_field(name='Affixes', value=', '.join(affix_names), inline=False)
-
-    if ctx.command.name == 'keys':
-        keys = keystones.get_keys_by_guild(ctx.guild.id)
-        for k in keys:
-            embed.add_field(name=k['owner'], value=' '.join([DUNGEON_ABBR_LIST[k['dungeon']], str(k['level'])]), inline=False)
-        if len(keys) == 0:
-            embed.add_field(name='No keys have been added.', value='Add a key with the "!ks add" command', inline=False)
-
-    if ctx.command.name == 'affixes':
-        for affix in keystones.affixes['affix_details']:
-            embed.add_field(name=affix['name'], value=affix['description'], inline=False)
-
+    embed.add_field(name=name, value=value, inline=False)
     return embed
 
 @bot.command(help='Adds your keystone to the list', aliases=['replace', '+'])
@@ -87,7 +66,15 @@ async def add(ctx, *args):
 
     name = character or ctx.author.display_name
     key = keystones.add_key(ctx.guild.id, ctx.author.id, dungeon.lower(), lvl, name)
-    await ctx.send(content='Keystone added by {}'.format(ctx.author.display_name), embed=generate_embed(ctx, key))
+    embed = generate_embed(key['owner'], ' '.join([DUNGEON_ABBR_LIST[key['dungeon']], str(key['level'])]))
+
+    affix_names = []
+    for index, affix in enumerate(keystones.affixes['affix_details']):
+        if index >= key['level']/3:
+            break
+        affix_names.append(affix['name'])
+    embed = generate_embed('Affixes', ', '.join(affix_names), embed)
+    await ctx.send(content='Keystone added by {}'.format(ctx.author.display_name), embed=embed)
 
 @add.error
 async def add_error(ctx, error):
@@ -100,7 +87,9 @@ async def remove(ctx, character: str = None):
     key = keystones.remove_key(ctx.guild.id, ctx.author.id, name)
     if not key:
         raise RemoveCommandError('You are unable to remove that key')
-    await ctx.send('Keystone removed by {}'.format(ctx.author.display_name), embed=generate_embed(ctx, key))
+
+    embed = generate_embed(name, "Keystone removed")
+    await ctx.send('Keystone removed by {}'.format(ctx.author.display_name), embed=embed)
 
 @remove.error
 async def remove_error(ctx, error):
@@ -109,15 +98,28 @@ async def remove_error(ctx, error):
 
 @bot.command(help='Lists the stored keystones and weekly affix information', aliases=['list'])
 async def keys(ctx):
-    keystones.check_cache(ctx.guild.id)
-    await ctx.send(content='Current keystone list', embed=generate_embed(ctx))
+    keystones.check_cache()
+
+    embed = None
+    keys = keystones.get_keys_by_guild(ctx.guild.id)
+    for k in keys:
+        embed = generate_embed(k['owner'], ' '.join([DUNGEON_ABBR_LIST[k['dungeon']], str(k['level'])]), embed)
+    if len(keys) == 0:
+        embed = generate_embed('No keys have been added.', 'Add a key with the "!ks add" command')
+
+    await ctx.send(content='Current keystone list', embed=embed)
 
 @bot.command(help='Lists the weekly affix information')
 async def affixes(ctx, force_load: bool = False):
-    keystones.check_cache(ctx.guild.id)
+    keystones.check_cache()
     if force_load:
         keystones.load_affixes()
-    await ctx.send(content='Weekly affix details', embed=generate_embed(ctx))
+
+    embed = None
+    for affix in keystones.affixes['affix_details']:
+        embed = generate_embed(affix['name'], affix['description'], embed)
+
+    await ctx.send(content='Weekly affix details', embed=embed)
 
 @bot.command(help='Lists the dungeons and acceptable abbreviations')
 async def dungeons(ctx):

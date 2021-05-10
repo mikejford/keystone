@@ -1,5 +1,4 @@
 *.pyc
 env
 token.txt
-keystone_cache.json
 keystonedb.json
