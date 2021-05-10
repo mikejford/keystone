@@ -144,8 +144,10 @@ class KeystoneStorage():
         return None
 
     def get_keys_by_guild(self, guild_id):
+        # gets the keys by guild sorted by descending level and alphabetical owner name
         key = Query()
-        return self.db.search(key.guild_id == guild_id)
+        keys = sorted(self.db.search(key.guild_id == guild_id), key=lambda k: k['owner'])
+        return sorted(keys, key=lambda k: k['level'], reverse=True)
 
     def load_affixes(self):
         r = requests.get(AFFIX_URL, timeout=2)
