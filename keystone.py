@@ -27,15 +27,15 @@ class Keystone():
 
         arg_match = re.fullmatch(arg_format, argument)
         if not arg_match:
-            raise Exception("Unable to convert user provided value: `{}`".format(argument))
+            raise KeystoneException("Unable to convert user provided value into a keystone: `{}`".format(argument), conversion_failure=True)
 
         keystone_dict = arg_match.groupdict()
         keystone_dict["dungeon"] = keystone_dict["dungeon"].lower()
         if keystone_dict["dungeon"] not in DUNGEON_ABBR_LIST.keys():
-            raise Exception("Unable to find dungeon name or abbreviation: `{}`".format(keystone_dict["dungeon"]))
+            raise KeystoneException("Unable to find dungeon name or abbreviation: `{}`\nUse the `dungeons` command to see valid abbreviations".format(keystone_dict["dungeon"]), conversion_failure=True)
 
         if int(keystone_dict["level"]) < MIN_KEYSTONE_LEVEL:
-            raise Exception("Keystone level must be greater than {}".format(MIN_KEYSTONE_LEVEL))
+            raise KeystoneException("Keystone level must be greater than {}".format(MIN_KEYSTONE_LEVEL), conversion_failure=True)
 
         if not keystone_dict.get("owner"):
             keystone_dict["owner"] = ctx.author.display_name
@@ -47,6 +47,20 @@ class Keystone():
         keystone_dict["user_id"] = ctx.author.id
 
         return cls(keystone_dict)
+
+class KeystoneException(Exception):
+    def __init__(self, msg=None, conversion_failure=False):
+        add_cmd_fmt = "Expected command arguments: `dungeon level [character]`"
+        if msg is None:
+            msg = "An unexpected error occurred."
+        if conversion_failure:
+            msg = "\n".join([add_cmd_fmt, msg])
+
+        super(KeystoneException, self).__init__(msg)
+
+    @property
+    def message(self):
+        return str(self)
 
 class KeystoneStorage():
     def __init__(self):
@@ -86,7 +100,7 @@ class KeystoneStorage():
         added = self.db.upsert(key_dict, (key.guild_id == keystone.guild_id) & (key.owner == keystone.owner))
 
         if len(added) == 0:
-            raise Exception("Keystone was not saved. Please try again.")
+            raise KeystoneException("Keystone was not saved. Please try again.")
 
         # move this to a separate handler registered with the add command
         # keys_api.post_key(user_id, name, dungeon, lvl)
@@ -97,19 +111,24 @@ class KeystoneStorage():
         self.check_cache()
 
         key = Query()
-        removed = self.db.remove((key.guild_id == guild_id) & (key.user_id == user_id) & (key.owner == name))
+        key_query = ((key.guild_id == guild_id) & (key.user_id == user_id) & (key.owner == name))
+        found = self.db.search(key_query)
+
+        if len(found) == 0:
+            raise KeystoneException("No keystone was found for removal.")
+
+        removed = self.db.remove(key_query)
 
         if len(removed) == 0:
-            raise Exception("Keystone was not removed. Please try again.")
+            raise KeystoneException("Keystone was not removed. Please try again.")
 
         return removed
 
-    # TODO: Change the response to return a list of Keystone objects
     def get_keys_by_guild(self, guild_id):
         # gets the keys by guild sorted by descending level and alphabetical owner name
         key = Query()
-        keys = sorted(self.db.search(key.guild_id == guild_id), key=lambda k: k['owner'])
-        return sorted(keys, key=lambda k: k['level'], reverse=True)
+        keys = sorted(self.db.search(key.guild_id == guild_id), key=lambda k: k["owner"])
+        return [Keystone(ks) for ks in sorted(keys, key=lambda k: k["level"], reverse=True)]
 
     def load_affixes(self):
         r = requests.get(AFFIX_URL, timeout=2)

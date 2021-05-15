@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from keystone import Keystone, KeystoneStorage
+from keystone import Keystone, KeystoneStorage, KeystoneException
 
 # Convert the constants into system values maintained in tinydb table
 from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, KEYSTONE_ICON_URL
@@ -24,8 +24,8 @@ class BasicCommands(commands.Cog):
     async def add(self, ctx, *, key: Keystone):
         try:
             key = self.keystones.add_key(key)
-        except Exception as e:
-            raise commands.CommandError(e.message)
+        except KeystoneException as e:
+            raise commands.CommandError(message=e.message)
 
         embed = generate_embed(key.owner, ' '.join([DUNGEON_ABBR_LIST[key.dungeon], str(key.level)]))
         affix_names = []
@@ -38,7 +38,9 @@ class BasicCommands(commands.Cog):
  
     @add.error
     async def add_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandError):
+        if isinstance(error, commands.ConversionError):
+            await ctx.send(error.original)
+        elif isinstance(error, commands.CommandError):
             await ctx.send(error)
 
     @commands.command(help="Removes your keystone from the list",
@@ -48,8 +50,8 @@ class BasicCommands(commands.Cog):
 
         try:
             key = self.keystones.remove_key(ctx.guild.id, ctx.author.id, name)
-        except Exception as e:
-            raise commands.CommandError(e.message)
+        except KeystoneException as e:
+            raise commands.CommandError(message=e.message)
 
         embed = generate_embed(name, "Keystone removed")
         await ctx.send(content="Keystone removed by {}".format(ctx.author.display_name), embed=embed)
@@ -65,12 +67,11 @@ class BasicCommands(commands.Cog):
         self.keystones.check_cache()
 
         embed = None
-        # TODO: Change the response to return a list of Keystone objects
         keys = self.keystones.get_keys_by_guild(ctx.guild.id)
         for k in keys:
-            embed = generate_embed(k["owner"], ' '.join([DUNGEON_ABBR_LIST[k["dungeon"]], str(k["level"])]), embed)
+            embed = generate_embed(k.owner, ' '.join([DUNGEON_ABBR_LIST[k.dungeon], str(k.level)]), embed)
         if len(keys) == 0:
-            embed = generate_embed("No keys have been added.", "Add a key with the '!ks add' command")
+            embed = generate_embed("No keys have been added.", "Add a key with the 'add' command")
 
         await ctx.send(content="Current Keystones List", embed=embed)
 
