@@ -7,10 +7,6 @@ from datetime import datetime, timedelta
 # Convert the constants into system values maintained in tinydb table
 from constants import AFFIX_URL, DUNGEON_ABBR_LIST, MIN_KEYSTONE_LEVEL
 
-# move this to a separate handler registered with the add command
-from keys_api import KeysApi
-keys_api = KeysApi()
-
 class Keystone():
     def __init__(self, keystone_dict):
         for key in keystone_dict:
@@ -90,6 +86,10 @@ class KeystoneStorage():
         if datetime.utcnow() > self.reset_timestamp:
             self._reset_cache()
 
+    def load_affixes(self):
+        r = requests.get(AFFIX_URL, timeout=2)
+        self.affixes = r.json()
+
     def add_key(self, keystone):
         self.check_cache()
 
@@ -101,9 +101,6 @@ class KeystoneStorage():
 
         if len(added) == 0:
             raise KeystoneException("Keystone was not saved. Please try again.")
-
-        # move this to a separate handler registered with the add command
-        # keys_api.post_key(user_id, name, dungeon, lvl)
 
         return Keystone(self.db.get(doc_id=added[0]))
 
@@ -130,6 +127,3 @@ class KeystoneStorage():
         keys = sorted(self.db.search(key.guild_id == guild_id), key=lambda k: k["owner"])
         return [Keystone(ks) for ks in sorted(keys, key=lambda k: k["level"], reverse=True)]
 
-    def load_affixes(self):
-        r = requests.get(AFFIX_URL, timeout=2)
-        self.affixes = r.json()
