@@ -33,14 +33,13 @@ class Keystone():
         if int(keystone_dict["level"]) < MIN_KEYSTONE_LEVEL:
             raise KeystoneException("Keystone level must be greater than {}".format(MIN_KEYSTONE_LEVEL), conversion_failure=True)
 
+        # ctx provides
+        #   - user_id
+        #   - author.display_name
+        keystone_dict["user_id"] = ctx.author.id
+
         if not keystone_dict.get("owner"):
             keystone_dict["owner"] = ctx.author.display_name
-
-        # ctx provides
-        #   - guild_id
-        #   - user_id
-        keystone_dict["guild_id"] = ctx.guild.id
-        keystone_dict["user_id"] = ctx.author.id
 
         return cls(keystone_dict)
 
@@ -97,18 +96,18 @@ class KeystoneStorage():
         key_dict["invalid_after"] = self.reset_timestamp.isoformat()
 
         key = Query()
-        added = self.db.upsert(key_dict, (key.guild_id == keystone.guild_id) & (key.owner == keystone.owner))
+        added = self.db.upsert(key_dict, (key.user_id == keystone.user_id) & (key.owner == keystone.owner))
 
         if len(added) == 0:
             raise KeystoneException("Keystone was not saved. Please try again.")
 
         return Keystone(self.db.get(doc_id=added[0]))
 
-    def remove_key(self, guild_id, user_id, name):
+    def remove_key(self, user_id, name):
         self.check_cache()
 
         key = Query()
-        key_query = ((key.guild_id == guild_id) & (key.user_id == user_id) & (key.owner == name))
+        key_query = ((key.user_id == user_id) & (key.owner == name))
         found = self.db.search(key_query)
 
         if len(found) == 0:
@@ -121,9 +120,7 @@ class KeystoneStorage():
 
         return removed
 
-    def get_keys_by_guild(self, guild_id):
-        # gets the keys by guild sorted by descending level and alphabetical owner name
-        key = Query()
-        keys = sorted(self.db.search(key.guild_id == guild_id), key=lambda k: k["owner"])
+    def get_keys(self):
+        # gets the keys sorted by descending level and alphabetical owner name
+        keys = sorted(self.db.all(), key=lambda k: k["owner"])
         return [Keystone(ks) for ks in sorted(keys, key=lambda k: k["level"], reverse=True)]
-

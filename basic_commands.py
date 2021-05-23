@@ -5,7 +5,7 @@ from keystone import Keystone, KeystoneStorage, KeystoneException
 # Convert the constants into system values maintained in tinydb table
 from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, KEYSTONE_ICON_URL
 
-# Utilities module candidate
+# TODO Utilities module candidate
 def generate_embed(name, value, embed=None):
     if embed is None:
         embed = discord.Embed()
@@ -49,7 +49,7 @@ class BasicCommands(commands.Cog):
         name = character or ctx.author.display_name
 
         try:
-            key = self.keystones.remove_key(ctx.guild.id, ctx.author.id, name)
+            key = self.keystones.remove_key(ctx.author.id, name)
         except KeystoneException as e:
             raise commands.CommandError(message=e.message)
 
@@ -67,7 +67,7 @@ class BasicCommands(commands.Cog):
         self.keystones.check_cache()
 
         embed = None
-        keys = self.keystones.get_keys_by_guild(ctx.guild.id)
+        keys = self.keystones.get_keys()
         for k in keys:
             embed = generate_embed(k.owner, ' '.join([DUNGEON_ABBR_LIST[k.dungeon], str(k.level)]), embed)
         if len(keys) == 0:

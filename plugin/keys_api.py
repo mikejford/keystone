@@ -1,8 +1,11 @@
 import os
 import requests
+
+# Convert the constants into system values maintained in tinydb table
 from constants import KEYSAPI_ADD_KEY_URL, DUNGEON_ABBR_LIST
 
 def setup(bot):
+    # TODO use environment variable to enable (KEYS_API_ENABLED)
     add_cmd = bot.get_command("add")
     add_cmd.after_invoke(post_key)
 
