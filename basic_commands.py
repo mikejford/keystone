@@ -76,8 +76,10 @@ class BasicCommands(commands.Cog):
         await ctx.send(content="Current Keystones List", embed=embed)
 
     @commands.command(help="Lists the weekly affix details")
-    async def affixes(self, ctx):
+    async def affixes(self, ctx, force_reload: bool = None):
         self.keystones.check_cache()
+        if force_reload:
+            self.keystones.load_affixes()
 
         embed = None
         for affix in self.keystones.affixes["affix_details"]:
