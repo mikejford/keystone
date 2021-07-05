@@ -1,0 +1,21 @@
+{
+  "keystone_icon": {
+    "url": "https://wow.zamimg.com/images/wow/icons/large/inv_relics_hourglass.jpg"
+  },
+  "raider_io": {
+    "expansion_id": "8",
+    "region": "us",
+    "locale": "en",
+    "periods": {
+      "url": "https://raider.io/api/v1/periods"
+    },
+    "affixes": {
+      "url": "https://raider.io/api/v1/mythic-plus/affixes",
+      "args": [ "region", "locale" ]
+    },
+    "dungeons": {
+      "url": "https://raider.io/api/v1/mythic-plus/static-data",
+      "args": [ "expansion_id" ]
+    }
+  }
+}
