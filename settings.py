@@ -1,12 +1,4 @@
 import json
-import requests
-
-with open('settings.json', 'r' as f:
-    settingsjson = Settings(json.loads(f.read()))
-
-class Settings(BaseSettings):
-    pass
-
 
 class BaseSettings(dict):
     def __init__(self, *args):
@@ -33,3 +25,7 @@ class BaseSettings(dict):
     def __delitem__(self, key):
         super(BaseSettings, self).__delitem__(key)
         del self.__dict__[key]
+
+with open('settings.json', 'r') as f:
+    settingsjson = BaseSettings(json.loads(f.read()))
+    print(settingsjson)

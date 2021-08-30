@@ -2,7 +2,9 @@ import os
 import requests
 
 # Convert the constants into system values maintained in tinydb table
-from constants import KEYSAPI_ADD_KEY_URL, DUNGEON_ABBR_LIST
+from constants import DUNGEON_ABBR_LIST
+KEYSAPI_ADD_KEY_URL = 'https://espkrandardsaskunclezar20200801100540.azurewebsites.net/api/keys'
+
 
 def setup(bot):
     # TODO use environment variable to enable (KEYS_API_ENABLED)
