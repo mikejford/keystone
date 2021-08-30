@@ -123,4 +123,4 @@ class KeystoneStorage():
     def get_keys(self):
         # gets the keys sorted by descending level and alphabetical owner name
         keys = sorted(self.db.all(), key=lambda k: k["owner"])
-        return [Keystone(ks) for ks in sorted(keys, key=lambda k: k["level"], reverse=True)]
+        return [Keystone(ks) for ks in sorted(keys, key=lambda k: int(k["level"]), reverse=True)]
