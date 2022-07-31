@@ -1,14 +1,12 @@
 DUNGEON_LIST = {
-    'De Other Side': ['DOS'],
-    'Halls of Atonement': ['HOA', 'Halls'],
-    'Mists of Tirna Scithe': ['MOTS', 'Mists'],
-    'Plaguefall': ['PF'],
-    'Sanguine Depths': ['SD'],
-    'Spires of Ascension': ['SOA', 'Spires'],
-    'The Necrotic Wake': ['NW'],
-    'Theater of Pain': ['TOP', 'Theater'],
-    'Tazavesh: Streets of Wonder': ['SOW', 'Streets'],
+    'Tazavesh: Streets of Wonder': ['SOW', 'TSW', 'Streets'],
     'Tazavesh: So\'leah\'s Gambit': ['SG', 'TSG', 'Gambit'],
+    'Mechagon Junkyard': ['JY', 'Junkyard'],
+    'Mechagon Workshop': ['WS', 'Workshop'],
+    'Lower Karazhan': ['LKARA', 'LK', 'Lower'],
+    'Upper Karazhan': ['UKARA', 'UK', 'Upper'],
+    'Grimrail Depot': ['GD', 'GRD', 'Depot'],
+    'Iron Docks': ['ID', 'Docks'],
 }
 
 DUNGEON_ABBR_LIST = {}
