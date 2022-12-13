@@ -1,12 +1,12 @@
 DUNGEON_LIST = {
-    'Tazavesh: Streets of Wonder': ['SOW', 'TSW', 'Streets'],
-    'Tazavesh: So\'leah\'s Gambit': ['SG', 'TSG', 'Gambit'],
-    'Mechagon Junkyard': ['JY', 'Junkyard'],
-    'Mechagon Workshop': ['WS', 'Workshop'],
-    'Lower Karazhan': ['LKARA', 'LK', 'Lower'],
-    'Upper Karazhan': ['UKARA', 'UK', 'Upper'],
-    'Grimrail Depot': ['GD', 'GRD', 'Depot'],
-    'Iron Docks': ['ID', 'Docks'],
+    'Algethar Academy': ['AA', 'Algethar', 'Academy'],
+    'Court of Stars': ['COS', 'Court'],
+    'Halls of Valor': ['HOV', 'Halls'],
+    'Ruby Life Pools': ['RLP'],
+    'Shadowmoon Burial Grounds': ['SBG'],
+    'Temple of the Jade Serpent': ['TJS', 'Temple', 'Jade Serpent'],
+    'The Azure Vaults': ['AV', 'Azure', 'Vaults', 'TAV'],
+    'The Nokhud Offensive': ['NO', 'Nokhud']
 }
 
 DUNGEON_ABBR_LIST = {}
