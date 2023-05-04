@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
-from keystone import Keystone, KeystoneStorage, KeystoneException
 
 # Convert the constants into system values maintained in tinydb table
-from constants import DUNGEON_LIST, DUNGEON_ABBR_LIST, KEYSTONE_ICON_URL
+from constants import KEYSTONE_ICON_URL
+from keystone import Keystone, KeystoneException, KeystoneStorage
+
 
 # TODO Utilities module candidate
 def generate_embed(name, value, embed=None):
@@ -27,7 +28,7 @@ class BasicCommands(commands.Cog):
         except KeystoneException as e:
             raise commands.CommandError(message=e.message)
 
-        embed = generate_embed(key.owner, ' '.join([DUNGEON_ABBR_LIST[key.dungeon], str(key.level)]))
+        embed = generate_embed(key.owner, ' '.join([key.dungeon, str(key.level)]))
         affix_names = []
         for index, affix in enumerate(self.keystones.affixes["affix_details"]):
             if index >= int(key.level)/3:
@@ -69,7 +70,7 @@ class BasicCommands(commands.Cog):
         embed = None
         keys = self.keystones.get_keys()
         for k in keys:
-            embed = generate_embed(k.owner, ' '.join([DUNGEON_ABBR_LIST[k.dungeon], str(k.level)]), embed)
+            embed = generate_embed(k.owner, ' '.join([k.dungeon, str(k.level)]), embed)
         if len(keys) == 0:
             embed = generate_embed("No keys have been added.", "Add a key with the 'add' command")
 
@@ -90,7 +91,8 @@ class BasicCommands(commands.Cog):
     @commands.command(help="Lists the dungeons and acceptable abbreviations")
     async def dungeons(self, ctx):
         embed = None
-        for name, abbr in DUNGEON_LIST.items():
-            embed = generate_embed(name, ', '.join(abbr), embed)
+        dungeon_list = Keystone.dungeon_list()
+        for name, abbr in dungeon_list.items():
+            embed = generate_embed(name, abbr, embed)
 
         await ctx.send(content="Dungeons and Abbreviations", embed=embed)

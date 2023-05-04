@@ -1,8 +1,10 @@
 import os
+
 import requests
 
 # Convert the constants into system values maintained in tinydb table
-from constants import KEYSAPI_ADD_KEY_URL, DUNGEON_ABBR_LIST
+from constants import KEYSAPI_ADD_KEY_URL
+
 
 def setup(bot):
     # TODO use environment variable to enable (KEYS_API_ENABLED)
@@ -17,7 +19,7 @@ async def post_key(_, ctx):
         postData = {
                 'userId': keystone.user_id,
                 'character': keystone.owner,
-                'dungeon': DUNGEON_ABBR_LIST[keystone.dungeon],
+                'dungeon': keystone.dungeon,
                 'keyLevel': keystone.level,
                 'environment': bot_env
                 }
