@@ -31,7 +31,10 @@ class BasicCommands(commands.Cog):
         embed = generate_embed(key.owner, ' '.join([key.dungeon, str(key.level)]))
         affix_names = []
         for index, affix in enumerate(self.keystones.affixes["affix_details"]):
-            if index >= int(key.level)/3:
+            # 2-6   Fort/Tyr affixes
+            # 7-13  Periodic affixes
+            # 14+   On-death affixes
+            if index > int(key.level)/7:
                 break
             affix_names.append(affix["name"])
         embed = generate_embed("Affixes", ', '.join(affix_names), embed)
