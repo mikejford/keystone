@@ -1,16 +1,46 @@
 import re
-
-import requests
-from tinydb import TinyDB, Query
 from datetime import datetime, timedelta
 
+import ngram
+import requests
+from tinydb import Query, TinyDB
+
 # Convert the constants into system values maintained in tinydb table
-from constants import AFFIX_URL, DUNGEON_ABBR_LIST, MIN_KEYSTONE_LEVEL
+from constants import (MIN_KEYSTONE_LEVEL, RAIDER_IO_AFFIX_URL,
+                       RAIDER_IO_SEASON_SLUG, RAIDER_IO_STATIC_DATA_URL)
+
+
+def lower(s):
+    return s.lower()
+
+def load_dungeons():
+    dungeon_abbr_list = {}
+    r = requests.get(RAIDER_IO_STATIC_DATA_URL, timeout=2)
+    static_data = r.json()
+
+    for season in static_data["seasons"]:
+        if season["slug"] == RAIDER_IO_SEASON_SLUG:
+            dungeon_abbr_list = dict([ (dgn["short_name"], dgn["name"]) for dgn in season["dungeons"] ])
+
+    dungeon_list = {name:abbr for abbr, name in dungeon_abbr_list.items()}
+    return [" ".join(dgn) for dgn in dungeon_list.items()]
 
 class Keystone():
+    dngn_ngram = ngram.NGram(items=load_dungeons(), warp=1.5, key=lower, N=2)
+
     def __init__(self, keystone_dict):
         for key in keystone_dict:
             setattr(self, key, keystone_dict[key])
+    
+    @classmethod
+    def find_dungeon(cls, dngn):
+        dungeon = cls.dngn_ngram.finditem(dngn)
+        dungeon = dungeon.rsplit(maxsplit=1)[0] if dungeon else dungeon
+        return dungeon
+
+    @classmethod
+    def dungeon_list(cls):
+        return dict([dngn.rsplit(maxsplit=1) for dngn in sorted(list(cls.dngn_ngram))])
 
     @classmethod
     async def convert(cls, ctx, argument):
@@ -26,9 +56,10 @@ class Keystone():
             raise KeystoneException("Unable to convert user provided value into a keystone: `{}`".format(argument), conversion_failure=True)
 
         keystone_dict = arg_match.groupdict()
-        keystone_dict["dungeon"] = keystone_dict["dungeon"].lower()
-        if keystone_dict["dungeon"] not in DUNGEON_ABBR_LIST.keys():
-            raise KeystoneException("Unable to find dungeon name or abbreviation: `{}`\nUse the `dungeons` command to see valid abbreviations".format(keystone_dict["dungeon"]), conversion_failure=True)
+        dungeon_name = keystone_dict["dungeon"]
+        keystone_dict["dungeon"] = cls.find_dungeon(keystone_dict["dungeon"])
+        if not keystone_dict["dungeon"]:
+            raise KeystoneException("Unable to find dungeon name or abbreviation: `{}`\nUse the `dungeons` command to see valid abbreviations".format(dungeon_name), conversion_failure=True)
 
         if int(keystone_dict["level"]) < MIN_KEYSTONE_LEVEL:
             raise KeystoneException("Keystone level must be greater than {}".format(MIN_KEYSTONE_LEVEL), conversion_failure=True)
@@ -86,7 +117,7 @@ class KeystoneStorage():
             self._reset_cache()
 
     def load_affixes(self):
-        r = requests.get(AFFIX_URL, timeout=2)
+        r = requests.get(RAIDER_IO_AFFIX_URL, timeout=2)
         self.affixes = r.json()
 
     def add_key(self, keystone):
