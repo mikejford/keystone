@@ -15,16 +15,22 @@ def lower(s):
 
 def load_dungeons():
     dungeon_abbr_list = {}
-    r = requests.get(RAIDER_IO_STATIC_DATA_URL, timeout=2)
-    static_data = r.json()
+    try:
+        r = requests.get(RAIDER_IO_STATIC_DATA_URL, timeout=2)
+        print('keystone.load_dungeons request response code: {0}'.format(r.status_code))
+        static_data = r.json()
 
-    for season in static_data["seasons"]:
-        if season["slug"] == RAIDER_IO_SEASON_SLUG:
-            dungeon_abbr_list = dict([ (dgn["short_name"], dgn["name"]) for dgn in season["dungeons"] ])
+        for season in static_data["seasons"]:
+            if season["slug"] == RAIDER_IO_SEASON_SLUG:
+                dungeon_abbr_list = dict([ (dgn["short_name"], dgn["name"]) for dgn in season["dungeons"] ])
 
-    dungeon_list = {name:abbr for abbr, name in dungeon_abbr_list.items()}
-    return [" ".join(dgn) for dgn in dungeon_list.items()]
-
+        dungeon_list = {name:abbr for abbr, name in dungeon_abbr_list.items()}
+        return [" ".join(dgn) for dgn in dungeon_list.items()]
+    except requests.Timeout as error:
+        print('keystone.load_dungeons request timeout error: {0}'.format(error))
+    except Exception as error:
+        print('keystone.load_dungeons request failed error: {0}'.format(error))
+    return [""]
 class Keystone():
     dngn_ngram = ngram.NGram(items=load_dungeons(), warp=1.5, key=lower, N=2)
 
