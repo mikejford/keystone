@@ -7,7 +7,7 @@ StartLimitIntervalSec=60
 Type=simple
 WorkingDirectory=/opt/keystone
 Environment="BOT_ENV=production"
-ExecStart=/usr/bin/python3 keystone_bot.py
+ExecStart=/usr/bin/python3 -u keystone_bot.py
 Restart=on-failure
 SyslogIdentifier=keystone
 
