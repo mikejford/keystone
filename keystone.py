@@ -17,7 +17,6 @@ def load_dungeons():
     dungeon_abbr_list = {}
     try:
         r = requests.get(RAIDER_IO_STATIC_DATA_URL, timeout=2)
-        print('keystone.load_dungeons request response code: {0}'.format(r.status_code))
         static_data = r.json()
 
         for season in static_data["seasons"]:

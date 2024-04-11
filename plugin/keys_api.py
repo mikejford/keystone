@@ -26,7 +26,6 @@ async def post_key(_, ctx):
                 'environment': bot_env
                 }
         response = requests.post(KEYSAPI_ADD_KEY_URL, json = postData)
-        print('ESPK keys api request response code: {0}'.format(response.status_code))
     except requests.Timeout as error:
         print('ESPK keys api request timeout error: {0}'.format(error))
     except Exception as error:
