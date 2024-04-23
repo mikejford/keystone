@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 # Convert the constants into system values maintained in tinydb table
-from constants import KEYSTONE_ICON_URL
+from constants import (KEYSTONE_ICON_URL, PERIODIC_EFFECT_AFFIX_LEVEL, ENEMY_EFFECT_AFFIX_LEVEL)
 from keystone import Keystone, KeystoneException, KeystoneStorage
 
 
@@ -30,13 +30,19 @@ class BasicCommands(commands.Cog):
 
         embed = generate_embed(key.owner, ' '.join([key.dungeon, str(key.level)]))
         affix_names = []
-        for index, affix in enumerate(self.keystones.affixes["affix_details"]):
-            # 2-6   Fort/Tyr affixes
-            # 7-13  Periodic affixes
-            # 14+   On-death affixes
-            if index > int(key.level)/7:
-                break
+        affix_details = list(self.keystones.affixes["affix_details"])
+
+        # Remove Enemy Effect affix if keystone lower than affix level
+        if int(key.level) < ENEMY_EFFECT_AFFIX_LEVEL:
+            affix_details.pop()
+        # Remove Periodic Effect affix if keystone lower than affix level
+        if int(key.level) < PERIODIC_EFFECT_AFFIX_LEVEL:
+            affix_details.pop()
+
+        # Add affixes for response information
+        for affix in affix_details:
             affix_names.append(affix["name"])
+
         embed = generate_embed("Affixes", ', '.join(affix_names), embed)
         await ctx.send(content="Keystone added by {}".format(ctx.author.display_name), embed=embed)
  
